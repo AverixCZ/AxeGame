@@ -1,6 +1,4 @@
 #include "raylib.h"
-#include <cstdio>
-#include <iostream>
 
 int main() 
 {
@@ -22,7 +20,7 @@ int main()
 
 
     // axe coordinates
-    int axe_x{200};
+    int axe_x{400};
     int axe_y{0};
     int axe_length{50};
 
@@ -32,37 +30,72 @@ int main()
     int u_axe_y{axe_y};
     int b_axe_y{axe_y + axe_length};
 
+    // axe collision
+    bool collision_with_axe = 
+                        (b_axe_y >= u_circle_y) && 
+                        (u_axe_y <= b_circle_y) && 
+                        (r_axe_x >= l_circle_x) && 
+                        (l_axe_x <= r_circle_x);
+
     int direction{10};
 
     SetTargetFPS(60);
     while (WindowShouldClose() == false)
     {
+        // Game logic
+
         BeginDrawing();
         ClearBackground(WHITE);
 
-        // Game logic begins
-        DrawCircle(circle_x, circle_y, circle_radius, BLUE);
-        DrawRectangle(axe_x,axe_y,axe_length, axe_length, RED);
-
-        // move the axe
-        axe_y += direction;
-       if(axe_y > height || axe_y < 0)
-       {
-            direction = -direction;
-       }
-
-        if (IsKeyDown(KEY_D) && circle_x < width)
+        if (collision_with_axe) 
         {
-            circle_x = circle_x + 10;
+            DrawText("Game Over!", 400,200,20,RED);
         }
-        if (IsKeyDown(KEY_A) && circle_x > 0)
+        else
         {
-            circle_x -= 10;
+            // Game logic begins
+
+            // update the edges
+            l_circle_x = circle_x - circle_radius;
+            r_circle_x = circle_x + circle_radius;
+            u_circle_y = circle_y - circle_radius;
+            b_circle_y = circle_y + circle_radius;
+            l_axe_x = axe_x;
+            r_axe_x = axe_x + axe_length;
+            u_axe_y = axe_y;
+            b_axe_y = axe_y + axe_length;
+
+            // update collision_with_axe
+            collision_with_axe = 
+                        (b_axe_y >= u_circle_y) && 
+                        (u_axe_y <= b_circle_y) && 
+                        (r_axe_x >= l_circle_x) && 
+                        (l_axe_x <= r_circle_x);
+
+            DrawCircle(circle_x, circle_y, circle_radius, BLUE);
+            DrawRectangle(axe_x,axe_y,axe_length, axe_length, RED);
+
+            // move the axe
+            axe_y += direction;
+            if(axe_y > height || axe_y < 0)
+            {
+                direction = -direction;
+            }
+
+            if (IsKeyDown(KEY_D) && circle_x < width)
+            {
+                circle_x = circle_x + 10;
+            }
+            if (IsKeyDown(KEY_A) && circle_x > 0)
+            {
+                circle_x -= 10;
+            }
+
+            // Game logic ends
         }
-        // Game logic ends
+
         EndDrawing();
 
     }
-    
 }
 
